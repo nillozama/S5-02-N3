@@ -14,6 +14,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cat.itacademy.barcelonactiva.Leal.Victor.s05.t02.n03.domain.User;
 
 public class UserDetailsImpl implements UserDetails {
+	
+
+	
 	private static final long serialVersionUID = 1L;
 
 	private int id;
@@ -29,6 +32,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	public UserDetailsImpl(int id, String username, String email, String password,
 			Collection<? extends GrantedAuthority> authorities) {
+		
 		this.id = id;
 		this.username = username;
 		this.email = email;
@@ -37,7 +41,7 @@ public class UserDetailsImpl implements UserDetails {
 	}
 	//Metodo que asigna los privilegios (autorización)
 	public static UserDetailsImpl build(User user) {
-		
+
 		//Convertimos la clase Rol a la clase GrantedAuthority
 		List<GrantedAuthority> authorities = user.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());

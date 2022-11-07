@@ -12,10 +12,6 @@ import cat.itacademy.barcelonactiva.Leal.Victor.s05.t02.n03.security.entity.Role
 
 public class UserDTO {
 
-	/**
-	 * 
-	 */
-	// private static final long serialVersionUID = 1L;
 	private int id;
 	private String username;
 	@JsonIgnore
@@ -110,7 +106,6 @@ public class UserDTO {
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
-	
 
 	public String getPassword() {
 		return password;

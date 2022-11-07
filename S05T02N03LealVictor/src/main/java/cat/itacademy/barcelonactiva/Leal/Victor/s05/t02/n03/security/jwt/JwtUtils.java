@@ -19,6 +19,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtUtils {
+	
 	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
 	private String jwtSecret="LealSecretKey";
@@ -40,9 +41,15 @@ public class JwtUtils {
 	}
 
 	public boolean validateJwtToken(String authToken) {
+		
+		boolean result=false;
+		
 		try {
+
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
-			return true;
+
+			result= true;
+			
 		} catch (SignatureException e) {
 			logger.error("Invalid JWT signature: {}", e.getMessage());
 		} catch (MalformedJwtException e) {
@@ -55,6 +62,6 @@ public class JwtUtils {
 			logger.error("JWT claims string is empty: {}", e.getMessage());
 		}
 
-		return false;
+		return result;
 	}
 }

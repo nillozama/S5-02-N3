@@ -10,7 +10,6 @@ import cat.itacademy.barcelonactiva.Leal.Victor.s05.t02.n03.dto.UserDTO;
 
 public interface GameController {
 	
-	//public ResponseEntity<String> addPlayer(String name);
 	public ResponseEntity<String> updatePlayer( UserDTO playerDTO);
 	public ResponseEntity<String> playGame(int idPlayerDTO);
 	public ResponseEntity<HttpStatus> deleteDiceRolls(int id);

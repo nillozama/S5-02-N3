@@ -36,60 +36,35 @@ public class GameControllerImpl implements GameController {
 	@Autowired
 	private DiceRollServiceImpl diceRollService;
 
-	/*
-	 * @Override
-	 * 
-	 * @PostMapping() public ResponseEntity<String>
-	 * addPlayer(@RequestParam(defaultValue = "ANÒNIM") String name) { // crea un
-	 * jugador/a
-	 * 
-	 * ResponseEntity<String> responseEntity;
-	 * 
-	 * if (name.equalsIgnoreCase("ANÒNIM") || !userService.findUserByName(name)) {
-	 * 
-	 * UserDTO userDTO = new UserDTO(name); try { userService.save(userDTO);
-	 * responseEntity = new ResponseEntity<>("S'ha creat el jugador " + name,
-	 * HttpStatus.CREATED); } catch (Exception e) { responseEntity = new
-	 * ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); } }
-	 * 
-	 * else {
-	 * 
-	 * responseEntity = new ResponseEntity<>("Aquest nom d'usuari ja existeix.",
-	 * HttpStatus.IM_USED); }
-	 * 
-	 * return responseEntity; }
-	 */
-
 	@Override
 	@PutMapping()
-	@PreAuthorize("hasRole('USER')")
+	@PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
 	public ResponseEntity<String> updatePlayer(@RequestBody UserDTO userDTO) { // modifica el nom del jugador/a
 
 		ResponseEntity<String> responseEntity;
 		String name = userDTO.getUsername();
-		
+
 		if (userService.isUser(userDTO.getId())) {
 
-		try {
-			userService.getUserById(userDTO.getId());
+			try {
+				userService.getUserById(userDTO.getId());
 
-			if (name.equalsIgnoreCase("ANÒNIM") || !userService.findUserByName(name)) {
+				if (name.equalsIgnoreCase("ANÒNIM") || !userService.findUserByName(name)) {
 
-				userService.update(userDTO);
+					userService.update(userDTO);
 
-				responseEntity = new ResponseEntity<>("S'ha modificat el nom a " + name, HttpStatus.OK);
-			} else {
+					responseEntity = new ResponseEntity<>("S'ha modificat el nom a " + name, HttpStatus.OK);
+				} else {
 
-				responseEntity = new ResponseEntity<>("Aquest nom d'usuari ja existeix.", HttpStatus.IM_USED);
+					responseEntity = new ResponseEntity<>("Aquest nom d'usuari ja existeix.", HttpStatus.IM_USED);
+				}
+
+			} catch (Exception e) {
+
+				responseEntity = new ResponseEntity<>("No hi ha un usuari amb aquest id.", HttpStatus.NOT_FOUND);
 			}
+		} else {
 
-		} catch (Exception e) {
-
-			responseEntity = new ResponseEntity<>("No hi ha un usuari amb aquest id.", HttpStatus.NOT_FOUND);
-		}
-		}
-		else {
-			
 			responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 
@@ -98,11 +73,10 @@ public class GameControllerImpl implements GameController {
 
 	@Override
 	@PostMapping("/{id}")
-	@PreAuthorize("hasRole('USER')")
+	@PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
 	@ResponseBody
 	public ResponseEntity<String> playGame(@PathVariable("id") int idUser) { // un jugador/a específic realitza una
 																				// tirada dels daus
-
 		ResponseEntity<String> responseEntity;
 
 		if (userService.isUser(idUser)) {
@@ -141,11 +115,9 @@ public class GameControllerImpl implements GameController {
 	@Override
 	@DeleteMapping("/{id}/games")
 	@PreAuthorize("hasRole('ADMIN')")
-	// @PreAuthorize("hasRole('ADMIN')")
 	@ResponseBody
 	public ResponseEntity<HttpStatus> deleteDiceRolls(@PathVariable("id") int idUserDTO) {// elimina les tirades del
 																							// jugador
-
 		ResponseEntity<HttpStatus> responseEntity;
 
 		try {
@@ -171,11 +143,10 @@ public class GameControllerImpl implements GameController {
 
 	@Override
 	@GetMapping("/")
-	@PreAuthorize("hasRole('USER')")
-	// @PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
+	// @PreAuthorize("hasRole('USER')")
+	@PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
 	public ResponseEntity<List<UserDTO>> getAllPlayers() { // retorna el llistat de tots els jugadors/es del sistema
 															// amb el seu percentatge mitjà d’èxits
-
 		ResponseEntity<List<UserDTO>> responseEntity;
 
 		try {
@@ -197,11 +168,10 @@ public class GameControllerImpl implements GameController {
 
 	@Override
 	@GetMapping("/{id}/games")
-	@PreAuthorize("hasRole('USER')")
+	@PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
 	public ResponseEntity<List<DiceRollDTO>> getAllDiceRolls(@PathVariable("id") int idUser) { // retorna el llistat
 																								// dejugades per
 																								// unjugador/a
-
 		ResponseEntity<List<DiceRollDTO>> responseEntity;
 
 		if (userService.isUser(idUser)) {
@@ -227,7 +197,7 @@ public class GameControllerImpl implements GameController {
 
 	@Override
 	@GetMapping("/ranking")
-	@PreAuthorize(("hasRole('USER')"))
+	@PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
 	public ResponseEntity<Float> getAverageRanking() { // retorna el ranking mig de tots els jugadors/es del
 
 		ResponseEntity<Float> responseEntity = null;
@@ -248,8 +218,8 @@ public class GameControllerImpl implements GameController {
 
 	@Override
 	@GetMapping("/ranking/loser")
-	@PreAuthorize("hasRole('USER')")
-	// @PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
+	// @PreAuthorize("hasRole('USER')")
+	@PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
 	public ResponseEntity<UserDTO> getWorstPlayer() { // retorna el jugador/a amb pitjor percentatge d’èxit
 
 		ResponseEntity<UserDTO> responseEntity;
@@ -268,7 +238,7 @@ public class GameControllerImpl implements GameController {
 
 	@Override
 	@GetMapping("/ranking/winner")
-	@PreAuthorize("hasRole('USER')")
+	@PreAuthorize(("hasRole('USER') or hasRole('ADMIN')"))
 	public ResponseEntity<UserDTO> getBestPlayer() { // retorna el jugador/a amb mitjor percentatge d’èxit
 
 		ResponseEntity<UserDTO> responseEntity;
@@ -284,5 +254,4 @@ public class GameControllerImpl implements GameController {
 
 		return responseEntity;
 	}
-
 }
